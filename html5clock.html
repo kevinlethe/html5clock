@@ -1,0 +1,212 @@
+ <!DOCTYPE HTML>
+ <html>
+ <head>
+ <style>
+body {
+	margin: 0px;
+	padding: 0px;
+}
+ </style>
+ </head>
+ <body>
+ <div id = 'clockdiv' />
+
+	 <script>
+class Clock {
+	drawface(numberFormat) {
+		this.context.beginPath();
+		this.context.arc(0, 0, this.radius, 0, 2 * Math.PI, false);
+		this.context.fillStyle = 'white';
+		this.context.fill();
+		this.context.lineWidth = 2;
+		this.context.strokeStyle = 'black';
+		this.context.stroke();
+		for (var i = 0; i < 360; i += 6) {
+			var width = i % 5 == 0 ? 2 : .5;
+			this.lineToEdge(this.radius * .92, i, 'black', width);
+		}
+
+		if (numberFormat | this.NumberFormat.NONE == 1) {
+			//Clock will be rotated 90° for drawing hands, but can't be done for the numbers
+			//or they will be at the wrong angle.  This will draw the numbers in the correct
+			//places starting at 'east'
+			var arabicDigits = ["3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "1", "2"];
+			var romanDigits = ["III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "I", "II"];
+			var digits = (numberFormat & this.NumberFormat.ROMAN) ? romanDigits : arabicDigits;
+			this.context.fillStyle = 'black';
+			this.context.textAlign = 'center';
+			this.context.textBaseline = 'middle';
+			var fontSize = (this.radius / 100) * 12;
+			this.context.font = "bold " + fontSize + "px sans-serif";
+			for (var i = 0; i < 12; i++) {
+				if ((numberFormat & this.NumberFormat.ALL) | (i % 3 == 0)) {
+					this.context.fillText(digits[i], this.radius * .8 * Math.cos(this.degreesToRadians(i * 30)), this.radius * 0.8 * Math.sin(this.degreesToRadians(i * 30)));
+				}
+			}
+		}
+	}
+
+	clearFace() {
+		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.context.putImageData(this.face, 0, 0);
+	}
+
+	hand(type, value) {
+		var color;
+		var length;
+		var width;
+		switch (type) {
+		case this.HandType.SECOND:
+			color = 'red';
+			length = this.radius * .9;
+			width = 1;
+			break;
+		case this.HandType.MINUTE:
+			length = this.radius * .89;
+			width = 2;
+			color = 'black';
+			break;
+		case this.HandType.HOUR:
+			length = this.radius * .6;
+			width = 4;
+			color = 'black';
+			break;
+		}
+		this.lineAtAngle(length, value, color, width);
+	}
+
+	//Draws a line of given length and angle from center of circle outward
+	lineAtAngle(length, angle, color, width) {
+		var radians = this.degreesToRadians(angle);
+		this.drawLine(
+			0,
+			0,
+			length * Math.cos(radians),
+			length * Math.sin(radians),
+			color,
+			width);
+	}
+
+	//Draws a line of given length and angle from parimeter of circle inward
+	lineToEdge(length, angle, color, width) {
+		var radians = this.degreesToRadians(angle);
+		this.drawLine(
+			length * Math.cos(radians),
+			length * Math.sin(radians),
+			this.radius * Math.cos(radians),
+			this.radius * Math.sin(radians),
+			color,
+			width);
+	}
+
+	drawLine(startX, startY, endX, endY, color, width) {
+		this.context.beginPath();
+		this.context.moveTo(startX, startY);
+		this.context.lineTo(endX, endY);
+		this.context.strokeStyle = color;
+		this.context.lineWidth = width;
+		this.context.stroke();
+	}
+
+	utcHand(angle) {
+		var radians = this.degreesToRadians(angle);
+		var length = this.radius * 1.1;
+		var triangleAngle = this.degreesToRadians(2);
+		var x = this.radius * Math.cos(radians);
+		var y = this.radius * Math.sin(radians);
+		this.context.beginPath();
+		this.context.moveTo(x, y);
+		this.context.lineTo(length * Math.cos(radians - triangleAngle), length * Math.sin(radians - triangleAngle));
+		this.context.lineTo(length * Math.cos(radians + triangleAngle), length * Math.sin(radians + triangleAngle));
+		this.context.fillStyle = 'black';
+		this.context.fill();
+	}
+
+	drawHands(self) {
+		var d = new Date();
+		var ms = d.getMilliseconds();
+		var s = d.getSeconds();
+		var m = d.getMinutes();
+		var h = d.getHours();
+		var u = d.getUTCHours();
+		self.clearFace();
+		self.hand(self.HandType.HOUR, self.hourToAngle(h, m));
+		self.hand(self.HandType.MINUTE, self.minuteToAngle(m, s));
+		if (self.showSeconds) {
+			self.hand(self.HandType.SECOND, self.secondsToAngle(s, ms));
+		}
+		if (self.showUtc) {
+			self.utcHand(self.hourToAngle(u, m));
+		}
+	}
+
+	hourToAngle(hours, minutes) {
+		return .5 * (60.0 * hours + minutes);
+	}
+
+	minuteToAngle(minutes, seconds) {
+		return .1 * (60.0 * minutes + seconds);
+	}
+
+	secondsToAngle(seconds, milliseconds) {
+		return .006 * (seconds * 1000.0 + milliseconds);
+	}
+
+	degreesToRadians(angle) {
+		return Math.PI * angle / 180.0
+	}
+
+	constructor(tag, radius, numberFormat, canvasColor) {
+		this.HandType = {
+			SECOND: 0,
+			MINUTE: 1,
+			HOUR: 2,
+			UTC: 3
+		}
+
+		this.NumberFormat = {
+			NONE: 0,
+			CARDINAL: 1,
+			ALL: 2,
+			ROMAN: 4
+		}
+		
+		this.showUtc = false;
+		this.showSeconds = true;
+		this.numberFormat = numberFormat;
+		
+		this.radius = radius;
+		var el = document.getElementById(tag);
+		this.canvas = document.createElement('canvas');
+		this.canvas.backgroundColor = 'blue';
+		this.canvas.width = this.radius * 2 * 1.2;
+		this.canvas.height = this.radius * 2 * 1.2;
+		el.appendChild(this.canvas);
+
+		this.context = this.canvas.getContext('2d');
+		var centerX = this.canvas.width / 2;
+		var centerY = this.canvas.height / 2;
+
+		this.context.translate(centerX, centerY);
+		this.drawface(this.numberFormat);
+		//rotate 90° counter-clockwise to account for canvas starting direction being 'east'
+		this.context.rotate(this.degreesToRadians(-90));
+		this.face = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+	}
+
+	start() {
+		var self = this;
+		setInterval(function () {
+			self.drawHands(self)
+		}, 10);
+	}
+
+}
+
+var c = new Clock("clockdiv", 100, 2);
+c.showUtc = true;
+c.start();
+ 
+ </script>
+ </body>
+</html>
