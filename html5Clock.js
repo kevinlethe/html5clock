@@ -59,7 +59,7 @@ class Clock {
 			}
 			this.context.fillStyle = 'red';
 			fontSize = (this.radius / 100) * 10;
-			this.context.font = "bold " + fontSize + "px sans-serif";
+			this.context.font = "bold " + fontSize + "px " + this.font;
 			if (!this.is24 && numberFormat & NumberFormat.SHOW24) {
 				for (var i = 12; i < 24; i++) {
 					if ((numberFormat & NumberFormat.ALL) | (i % 3 == 0)) {
