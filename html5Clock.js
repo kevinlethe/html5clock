@@ -96,15 +96,15 @@ class Clock {
 			color = 'black';
 			break;
 		}
-		this.lineAtAngle(length, value, color, width);
+		this.lineAtAngle(length, value, color, width, this.radius * -.1);
 	}
 
-	//Draws a line of given length and angle from center of circle outward
-	lineAtAngle(length, angle, color, width) {
+	//Draws a line of given length and angle from offset, through center and outward
+	lineAtAngle(length, angle, color, width, offset) {
 		var radians = this.degreesToRadians(angle);
 		this.drawLine(
-			0,
-			0,
+			offset * Math.cos(radians),
+			offset * Math.sin(radians),
 			length * Math.cos(radians),
 			length * Math.sin(radians),
 			color,
