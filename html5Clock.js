@@ -20,6 +20,16 @@ class Clock {
 			var width = i % 5 == 0 ? 2 : .5;
 			this.lineToEdge(this.radius * .92, i, 'black', width);
 		}
+		//Fancy face for ROMAN
+		if (numberFormat & NumberFormat.ROMAN) {
+			this.context.beginPath();
+			this.context.arc(0, 0, this.radius * .92, 0, 2 * Math.PI, false);
+			this.context.stroke();
+			for (var i = 0; i < 360; i += 30) {
+				//var width = i % 5 == 0 ? 2 : .5;
+				this.drawTriangle(i, 2, this.radius * .92, 1);
+			}
+		}
 
 		if (!(numberFormat & NumberFormat.NONE)) {
 			//Clock will be rotated 90° for drawing hands, but can't be done for the numbers
@@ -123,11 +133,19 @@ class Clock {
 	}
 
 	utcHand(angle) {
+		this.drawTriangle(angle, 2, this.radius, 1.1);
+	}
+	
+	drawTriangle(angle, sideAngle, start, distance) {
 		var radians = this.degreesToRadians(angle);
-		var length = this.radius * 1.1;
-		var triangleAngle = this.degreesToRadians(2);
-		var x = this.radius * Math.cos(radians);
-		var y = this.radius * Math.sin(radians);
+		var length = this.radius * distance;
+		var triangleAngle = this.degreesToRadians(sideAngle);
+		var x = start * Math.cos(radians);
+		var y = start * Math.sin(radians);
+		if (distance < 0) {
+			x = x * -1;
+			y = y * -1;
+		}
 		this.context.beginPath();
 		this.context.moveTo(x, y);
 		this.context.lineTo(length * Math.cos(radians - triangleAngle), length * Math.sin(radians - triangleAngle));
