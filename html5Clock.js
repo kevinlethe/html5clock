@@ -46,7 +46,7 @@ class Clock {
 			this.context.textAlign = 'center';
 			this.context.textBaseline = 'middle';
 			var fontSize = (this.radius / 100) * 12;
-			this.context.font = "bold " + fontSize + "px sans-serif";
+			this.context.font = "bold " + fontSize + "px " + this.font;
 			var totalDigits = this.is24 ? 24 : 12;
 			for (var i = 0; i < totalDigits; i++) {
 				if ((numberFormat & NumberFormat.ALL) | (i % 3 == 0)) {
@@ -192,7 +192,7 @@ class Clock {
 		return Math.PI * angle / 180.0
 	}
 
-	constructor(tag, radius, numberFormat, is24, canvasColor, faceColor) {
+	constructor(tag, radius, numberFormat, is24, canvasColor, faceColor, font) {
 		this.HandType = {
 			SECOND: 0,
 			MINUTE: 1,
@@ -204,6 +204,11 @@ class Clock {
 		this.showSeconds = true;
 		this.numberFormat = numberFormat;
 		this.is24 = is24;
+		if (font == null) {
+			this.font = numberFormat & NumberFormat.ROMAN ? "serif" : "sans-serif";
+		} else {
+			this.font = font;
+		}
 		
 		this.radius = radius;
 		var el = document.getElementById(tag);
