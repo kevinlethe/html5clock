@@ -23,6 +23,10 @@ class Clock {
 		//Fancy face for ROMAN
 		if (numberFormat & NumberFormat.ROMAN) {
 			this.context.beginPath();
+			this.context.arc(0, 0, this.radius * .06, 0, 2 * Math.PI, false);
+			this.context.fillStyle = 'black';
+			this.context.fill();
+			this.context.beginPath();
 			this.context.arc(0, 0, this.radius * .92, 0, 2 * Math.PI, false);
 			this.context.stroke();
 			for (var i = 0; i < 360; i += 30) {
@@ -83,20 +87,30 @@ class Clock {
 		case this.HandType.SECOND:
 			color = 'red';
 			length = this.radius * .9;
-			width = 1;
+			width = 1 * (this.radius / 100);
 			break;
 		case this.HandType.MINUTE:
-			length = this.radius * .89;
-			width = 2;
+			length = this.radius * .85;
+			width = 3 * (this.radius / 100);
 			color = 'black';
+			if (this.numberFormat & NumberFormat.ROMAN) {
+				length = this.radius * .55;
+				this.drawTriangle(value, 5, this.radius * .90, .67);
+				this.drawCircle(value, this.radius * .62, width * 2, width);
+			}
 			break;
 		case this.HandType.HOUR:
 			length = this.radius * .6;
-			width = 4;
+			width = 4 * (this.radius / 100);
 			color = 'black';
+			if (this.numberFormat & NumberFormat.ROMAN) {
+				length = this.radius * .28;
+				this.drawTriangle(value, 10, this.radius * .70, .42);
+				this.drawCircle(value, this.radius * .35, width * 2, width);
+			}
 			break;
 		}
-		this.lineAtAngle(length, value, color, width, this.radius * -.1);
+		this.lineAtAngle(length, value, color, width, (this.numberFormat & NumberFormat.ROMAN) ? this.radius * .05 : this.radius * -.1);
 	}
 
 	//Draws a line of given length and angle from offset, through center and outward
@@ -122,6 +136,7 @@ class Clock {
 			color,
 			width);
 	}
+	
 
 	drawLine(startX, startY, endX, endY, color, width) {
 		this.context.beginPath();
@@ -136,6 +151,19 @@ class Clock {
 		this.drawTriangle(angle, 2, this.radius, 1.1);
 	}
 	
+	drawCircle(angle, distance, radius, width) {
+		var radians = this.degreesToRadians(angle);
+		var centerX = distance * Math.cos(radians);
+		var centerY = distance * Math.sin(radians);
+		this.context.beginPath();
+		this.context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+		//this.context.fillStyle = 'black';
+		//this.context.fill();
+		this.context.lineWidth = width;
+		this.context.strokeStyle = 'black';
+		this.context.stroke();
+	}
+	
 	drawTriangle(angle, sideAngle, start, distance) {
 		var radians = this.degreesToRadians(angle);
 		var length = this.radius * distance;
@@ -143,8 +171,8 @@ class Clock {
 		var x = start * Math.cos(radians);
 		var y = start * Math.sin(radians);
 		if (distance < 0) {
-			x = x * -1;
-			y = y * -1;
+			//x = x * -1;
+			//y = y * -1;
 		}
 		this.context.beginPath();
 		this.context.moveTo(x, y);
