@@ -266,7 +266,7 @@ class Clock {
 	}
 	
 	staticTime(time) {
-		this.drawHands(this, new DateTime('2016-1-1 ' + time));
+		this.drawHands(this, new Date('2016-1-1 ' + time));
 	}
 
 }
