@@ -182,8 +182,8 @@ class Clock {
 		this.context.fill();
 	}
 
-	drawHands(self) {
-		var d = new Date();
+	drawHands(self, time) {
+		var d = time || new Date();
 		var ms = d.getMilliseconds();
 		var s = d.getSeconds();
 		var m = d.getMinutes();
@@ -263,6 +263,10 @@ class Clock {
 		setInterval(function () {
 			self.drawHands(self)
 		}, 10);
+	}
+	
+	staticTime(time) {
+		this.drawHands(this, new DateTime('2016-1-1 ' + time));
 	}
 
 }
