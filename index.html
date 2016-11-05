@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Html5clock by kevinlethe</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <script src="html5Clock.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Html5clock</h1>
+      <h2 class="project-tagline">An analog clock implemented in Html5</h2>
+      <a href="https://github.com/kevinlethe/html5clock" class="btn">View on GitHub</a>
+      <a href="https://github.com/kevinlethe/html5clock/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/kevinlethe/html5clock/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+	    <h3>Default appearance</h3>
+<div id = 'clockdiv' />
+    <script type="text/javascript" >
+	(function () {
+		var c = new Clock("clockdiv", 100);
+		c.start();
+	})();
+    </script>
+
+<h3>With UTC pointer</h3>
+<div id = 'clockdiv5' />
+    <script type="text/javascript" >
+	(function () {
+		var c = new Clock("clockdiv5", 100, NumberFormat.ALL, false, 'lightblue');
+		c.showUtc = true;
+		c.start();
+	})();
+    </script>
+  
+	    <h3>With Roman numerals</h3>
+<div id = 'clockdiv2' />
+    <script type="text/javascript" >
+	(function () {
+		var c = new Clock("clockdiv2", 100, NumberFormat.ALL + NumberFormat.ROMAN, false, 'white', '#d0c0a0');
+		c.showSeconds = false;
+		c.start();
+	})();
+    </script>
+	    
+	    <h3>With 24 hour markings</h3>
+<div id = 'clockdiv3' />
+    <script type="text/javascript" >
+	(function () {
+		var c = new Clock("clockdiv3", 100, NumberFormat.ALL + NumberFormat.SHOW24, false, 'white', 'silver', 'monospace');
+		c.showUtc = true;
+		c.start();
+	})();
+    </script>
+	    
+	    <h3>24 hour clock</h3>
+<div id = 'clockdiv4' />
+    <script type="text/javascript" >
+	(function () {
+		var c = new Clock("clockdiv4", 100, NumberFormat.ALL, true);
+		c.showUtc = true;
+		c.start();
+	})();
+    </script>
+  </body>
+</html>
